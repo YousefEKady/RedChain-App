@@ -169,7 +169,6 @@ See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed contribution guidelines
 
 - [API Documentation](docs/API-documentation.md)
 - [Contributing Guide](docs/CONTRIBUTING.md)
-- [Architecture Overview](docs/architecture.md)
 
 ## 📄 License
 

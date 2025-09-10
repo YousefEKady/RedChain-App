@@ -17,6 +17,7 @@ class NotificationService:
     
     def __init__(self):
         self.webhook_url = settings.report_notification_webhook
+        self.discord_webhook_url = settings.discord_webhook_url
         
     async def send_report_notification(
         self, 
@@ -121,6 +122,67 @@ class NotificationService:
             
         except Exception as e:
             logger.error(f"Failed to send scheduler status notification: {e}")
+    
+    async def send_engagement_completion_notification(
+        self,
+        engagement_id: str,
+        engagement_name: str,
+        total_findings: int,
+        critical_findings: int,
+        high_findings: int,
+        duration: str,
+        report_path: Optional[str] = None
+    ):
+        """Send Discord notification when an engagement completes."""
+        if not self.discord_webhook_url:
+            logger.debug("No Discord webhook URL configured, skipping engagement notification")
+            return
+            
+        try:
+            # Create Discord embed format
+            embed = {
+                "title": "🎯 Red Team Engagement Completed",
+                "description": f"**{engagement_name}** has finished execution",
+                "color": 0x00ff00 if critical_findings == 0 else 0xff6b35 if critical_findings > 0 else 0xffa500,
+                "fields": [
+                    {
+                        "name": "📊 Findings Summary",
+                        "value": f"**Total:** {total_findings}\n**Critical:** {critical_findings}\n**High:** {high_findings}",
+                        "inline": True
+                    },
+                    {
+                        "name": "⏱️ Duration",
+                        "value": duration,
+                        "inline": True
+                    },
+                    {
+                        "name": "🆔 Engagement ID",
+                        "value": f"`{engagement_id}`",
+                        "inline": True
+                    }
+                ],
+                "timestamp": datetime.now().isoformat(),
+                "footer": {
+                    "text": "Red Team Automation Framework"
+                }
+            }
+            
+            if report_path:
+                embed["fields"].append({
+                    "name": "📄 Report",
+                    "value": f"Generated at: `{report_path}`",
+                    "inline": False
+                })
+            
+            payload = {
+                "embeds": [embed]
+            }
+            
+            await self._send_discord_webhook(payload)
+            logger.info(f"Sent Discord engagement completion notification for {engagement_id}")
+            
+        except Exception as e:
+            logger.error(f"Failed to send Discord engagement completion notification: {e}")
             
     async def _send_webhook(self, payload: Dict[str, Any]):
         """Send webhook HTTP request."""
@@ -146,6 +208,31 @@ class NotificationService:
             logger.error("Webhook request timed out")
         except Exception as e:
             logger.error(f"Error sending webhook: {e}")
+    
+    async def _send_discord_webhook(self, payload: Dict[str, Any]):
+        """Send Discord webhook HTTP request."""
+        try:
+            timeout = aiohttp.ClientTimeout(total=10)
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.post(
+                    self.discord_webhook_url,
+                    json=payload,
+                    headers={
+                        "Content-Type": "application/json",
+                        "User-Agent": "RedTeam-Automation/1.0"
+                    }
+                ) as response:
+                    if response.status >= 400:
+                        logger.warning(
+                            f"Discord webhook returned status {response.status}: {await response.text()}"
+                        )
+                    else:
+                        logger.debug(f"Discord webhook sent successfully (status: {response.status})")
+                        
+        except asyncio.TimeoutError:
+            logger.error("Discord webhook request timed out")
+        except Exception as e:
+            logger.error(f"Error sending Discord webhook: {e}")
             
     def _get_file_size(self, file_path: str) -> Optional[int]:
         """Get file size in bytes."""

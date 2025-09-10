@@ -23,6 +23,7 @@ try:
     # Removed to avoid circular import - will import locally where needed
     from database.database import get_db
     from database.models import EngagementStatus
+    from ..services.notification_service import NotificationService
 except ImportError:
     # Fall back to absolute imports (when run as script)
     from schemas import (
@@ -40,6 +41,7 @@ except ImportError:
     from services.report_scheduler import scheduler
     from database.database import get_db
     from database.models import EngagementStatus
+    from services.notification_service import NotificationService
 
 logger = get_logger(__name__)
 
@@ -66,6 +68,7 @@ class RedTeamOrchestrator:
         try:
             self.security_agent = SecurityAgent()
             self.knowledge_base = KnowledgeBase(self.security_agent)
+            self.notification_service = NotificationService()
         except Exception as e:
             logger.error(f"Failed to initialize AI components: {e}")
             raise RuntimeError(f"Failed to initialize orchestrator components: {e}")
@@ -186,6 +189,39 @@ class RedTeamOrchestrator:
                        engagement_id=self.engagement_id,
                        duration_seconds=duration.total_seconds(),
                        findings_count=len(self.findings))
+            
+            # Send Discord notification for engagement completion
+            try:
+                if settings.discord_webhook_url:
+                    # Calculate findings summary
+                    critical_count = sum(1 for f in self.findings if f.severity == SeverityLevel.CRITICAL)
+                    high_count = sum(1 for f in self.findings if f.severity == SeverityLevel.HIGH)
+                    medium_count = sum(1 for f in self.findings if f.severity == SeverityLevel.MEDIUM)
+                    low_count = sum(1 for f in self.findings if f.severity == SeverityLevel.LOW)
+                    
+                    findings_summary = {
+                        "critical": critical_count,
+                        "high": high_count,
+                        "medium": medium_count,
+                        "low": low_count,
+                        "total": len(self.findings)
+                    }
+                    
+                    # Get report path if available
+                    report_path = str(self.output_dir / f"{self.engagement_id}_report.html") if hasattr(report, 'file_path') else None
+                    
+                    await self.notification_service.send_engagement_completion_notification(
+                        engagement_id=self.engagement_id,
+                        engagement_name=f"Engagement {self.engagement_id}",
+                        total_findings=len(self.findings),
+                        critical_findings=critical_count,
+                        high_findings=high_count,
+                        duration=str(duration),
+                        report_path=report_path
+                    )
+                    logger.info("Discord notification sent for engagement completion")
+            except Exception as e:
+                logger.warning(f"Failed to send Discord notification: {e}")
             
             return report
             

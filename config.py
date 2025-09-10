@@ -66,6 +66,9 @@ class Settings(BaseSettings):
     batch_report_generation: bool = Field(default=False, env="BATCH_REPORT_GENERATION")
     max_concurrent_reports: int = Field(default=3, env="MAX_CONCURRENT_REPORTS")
     
+    # Notification Configuration
+    discord_webhook_url: Optional[str] = Field(default=None, env="DISCORD_WEBHOOK_URL")
+    
     @validator('google_api_key')
     def validate_api_key(cls, v):
         """Validate Google API key is not a placeholder."""
