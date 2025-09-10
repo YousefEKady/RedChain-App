@@ -1,0 +1,74 @@
+# Core dependencies
+pydantic>=2.0.0
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+typer[all]>=0.9.0
+python-multipart>=0.0.6
+
+# AI and LLM
+google-generativeai>=0.3.0
+langchain>=0.1.0
+langchain-google-genai>=0.0.6
+
+# Vector database and embeddings
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+
+# Data processing
+pyyaml>=6.0
+xml-etree>=1.3.0
+jinja2>=3.1.0
+pandas>=2.0.0
+numpy>=1.24.0
+
+# HTTP and networking
+requests>=2.31.0
+httpx>=0.25.0
+aiohttp>=3.9.0
+
+# File processing
+python-magic>=0.4.27
+chardet>=5.2.0
+
+# Report generation
+weasyprint>=60.0
+markdown>=3.5.0
+reportlab>=4.0.0
+
+# Logging and monitoring
+rich>=13.0.0
+coloredlogs>=15.0.1
+
+# Utilities
+python-dotenv>=1.0.0
+click>=8.1.0
+tqdm>=4.66.0
+psutil>=5.9.0
+beautifulsoup4>=4.12.0
+structlog>=23.1.0
+croniter>=1.4.0
+pydantic-settings>=2.0.0
+
+# Development and testing dependencies (optional)
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.12.0
+pytest-xdist>=3.3.0
+pytest-timeout>=2.2.0
+black>=23.0.0
+flake8>=6.1.0
+isort>=5.12.0
+mypy>=1.6.0
+pre-commit>=3.5.0
+
+# Security
+cryptography>=41.0.0
+
+# Optional: For better performance
+orjson>=3.9.0
+ujson>=5.8.0
+
+# Optional: For advanced features
+plotly>=5.17.0
+streamlit>=1.28.0

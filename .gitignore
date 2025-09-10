@@ -1,0 +1,121 @@
+# Environment variables and secrets
+.env
+.env.local
+.env.production
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PIPFILE.lock
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+data/
+data_external/
+vector_db/
+
+# Output and reports
+output/
+output_external/
+reports/
+reports_external/
+*.log
+steps.txt
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Security scan results
+*.json
+*.xml
+*.csv
+!examples/*.json
+!tests/*.json
+!docs/*.json
+
+# Burp Suite files
+*.burp
+*.state
+
+# Tool outputs
+nuclei_output/
+subfinder_output/
+httpx_output/
+
+# Scope files (may contain sensitive targets)
+scope.yaml
+scope.yml
+!scope.example.yaml
+!scope.example.yml
+
+# API keys and sensitive configuration
+*.api
+*.token
+config.local.*
+
+# Large model files and caches
+*.model
+*.bin
+*.safetensors
+chroma.sqlite3
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

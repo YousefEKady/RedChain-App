@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red Team Engagement Report - {{ report.engagement_id }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --critical-color: #7c3aed;
+            --info-color: #06b6d4;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --border-color: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--success-color));
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 3rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 i {
+            margin-right: 1rem;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .header .subtitle {
+            font-size: 1.25rem;
+            font-weight: 400;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        .meta-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem;
+            padding: 0;
+        }
+        
+        .meta-item {
+            background: var(--light-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .meta-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+        
+        .meta-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .meta-item:hover::before {
+            opacity: 1;
+        }
+        
+        .meta-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        
+        .meta-content {
+            flex: 1;
+        }
+        
+        .meta-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .meta-value {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+        }
+        .section {
+            margin: 3rem 2rem;
+        }
+        
+        .section h2 {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .section h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 3px;
+        }
+        
+        .section h3 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section h3::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-color);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .stat-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.125rem;
+            opacity: 0.8;
+        }
+        .finding {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .ai-analysis-section {
+            background: linear-gradient(135deg, #f8f9ff, #e8f2ff);
+            border: 1px solid #d1e7ff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        
+        .ai-analysis-section::before {
+            content: '🤖';
+            position: absolute;
+            top: -8px;
+            left: 1rem;
+            background: white;
+            padding: 0 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .ai-analysis-content {
+            color: #2c5aa0;
+            font-style: italic;
+            line-height: 1.6;
+        }
+        
+        .remediation-content {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        
+        .references-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .references-list li {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .references-list li:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        
+        .references-list a {
+            color: #0ea5e9;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .references-list a:hover {
+            text-decoration: underline;
+            transition: all 0.3s ease;
+        }
+        
+        .finding:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        
+        .finding-header {
+            padding: 1.5rem 2rem;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .finding-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -50px;
+            width: 100px;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transform: skewX(-15deg);
+        }
+        
+        .finding-header.critical {
+            background: linear-gradient(135deg, var(--critical-color), #9333ea);
+        }
+        
+        .finding-header.high {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+        }
+        
+        .finding-header.medium {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+        }
+        
+        .finding-header.low {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+        }
+        
+        .finding-header.info {
+            background: linear-gradient(135deg, var(--info-color), #0891b2);
+        }
+        
+        .finding-header i {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+        
+        .finding-body {
+            padding: 2rem;
+        }
+        .finding-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--light-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        
+        .finding-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .finding-meta-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+        
+        .finding-meta-content {
+            flex: 1;
+        }
+        
+        .finding-meta-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+        
+        .finding-meta-value {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+        
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-true-positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .status-false-positive {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .status-needs-review {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tool-badge {
+            background: linear-gradient(135deg, var(--info-color), #0891b2);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .tool-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .tool-badge i {
+            font-size: 1rem;
+        }
+        
+        .recommendations {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-left: 6px solid var(--success-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .recommendations::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+        }
+        
+        .recommendations h2,
+        .recommendations h3 {
+            color: var(--success-color);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .recommendations h2 i,
+        .recommendations h3 i {
+            font-size: 1.25rem;
+        }
+        
+        .recommendations ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        .recommendations li {
+            margin-bottom: 1rem;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+            margin-left: 1rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateX(4px);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3.25rem;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px var(--primary-color);
+        }
+        
+        .timeline-time {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .timeline-time i {
+            font-size: 1rem;
+        }
+        .ai-insights {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .ai-insights::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        
+        .ai-insights h2,
+        .ai-insights h3 {
+            color: white;
+            margin-top: 0;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .ai-insights h2 i,
+        .ai-insights h3 i {
+            font-size: 1.5rem;
+        }
+        
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .insight-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .insight-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-4px);
+        }
+        
+        .insight-card h4 {
+            margin-top: 0;
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem;
+            background: var(--light-color);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .footer p {
+            margin: 0.5rem 0;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                border-radius: 12px;
+            }
+            
+            .header {
+                padding: 2rem 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                margin: 2rem 1rem;
+            }
+            
+            .meta-info {
+                grid-template-columns: 1fr;
+                margin: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .finding-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .insight-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media print {
+            body { 
+                background: white !important;
+                -webkit-print-color-adjust: exact;
+            }
+            .container { 
+                box-shadow: none !important;
+                margin: 0 !important;
+            }
+            .header::before,
+            .ai-insights::before {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Red Team Engagement Report</h1>
+            <div class="subtitle">{{ report.scope.description }}</div>
+        </div>
+
+        <div class="meta-info">
+            <div class="meta-item">
+                <div class="meta-icon"><i class="fas fa-id-card"></i></div>
+                <div class="meta-content">
+                    <div class="meta-label">Engagement ID</div>
+                    <div class="meta-value">{{ report.engagement_id }}</div>
+                </div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="meta-content">
+                    <div class="meta-label">Generated</div>
+                    <div class="meta-value">{{ generation_time.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-icon"><i class="fas fa-clock"></i></div>
+                <div class="meta-content">
+                    <div class="meta-label">Duration</div>
+                    <div class="meta-value">{{ duration if duration else 'N/A' }}</div>
+                </div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-icon"><i class="fas fa-user-shield"></i></div>
+                <div class="meta-content">
+                    <div class="meta-label">Generated By</div>
+                    <div class="meta-value">{{ report.generated_by }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Executive Summary</h2>
+            <p>{{ report.executive_summary if report.executive_summary else 'No executive summary provided.' }}</p>
+        </div>
+
+        <div class="section">
+            <h2>Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-search"></i></div>
+                    <span class="stat-number">{{ statistics.total_findings }}</span>
+                    <span class="stat-label">Total Findings</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <span class="stat-number">{{ statistics.true_positives }}</span>
+                    <span class="stat-label">True Positives</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                    <span class="stat-number">{{ statistics.false_positives }}</span>
+                    <span class="stat-label">False Positives</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-bullseye"></i></div>
+                    <span class="stat-number">{{ "%.1f" | format(statistics.accuracy) }}%</span>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+                {% if statistics.high_priority_findings %}
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <span class="stat-number">{{ statistics.high_priority_findings }}</span>
+                    <span class="stat-label">High Priority</span>
+                </div>
+                {% endif %}
+                {% if statistics.avg_confidence %}
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <span class="stat-number">{{ "%.1f" | format(statistics.avg_confidence * 100) }}%</span>
+                    <span class="stat-label">Avg Confidence</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if ai_insights and ai_insights.analysis_generated %}
+        <div class="section">
+            <div class="ai-insights">
+                <h2><i class="fas fa-robot"></i>AI Security Analysis</h2>
+                
+                <div class="insight-grid">
+                    <div class="insight-card">
+                        <h4><i class="fas fa-shield-alt"></i>Risk Assessment</h4>
+                        <p>{{ ai_insights.risk_assessment }}</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4><i class="fas fa-search"></i>Findings Analyzed</h4>
+                        <p>{{ ai_insights.findings_analyzed if ai_insights.findings_analyzed else 'N/A' }} findings processed</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4><i class="fas fa-exclamation-triangle"></i>Key Concerns</h4>
+                        <ul>
+                            {% for concern in ai_insights.key_concerns %}
+                            <li>{{ concern }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="insight-card">
+                        <h4><i class="fas fa-lightbulb"></i>Recommendations</h4>
+                        <ul>
+                            {% for rec in ai_insights.recommendations %}
+                            <li>{{ rec }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                
+                {% if ai_insights.full_analysis %}
+                <h3><i class="fas fa-brain"></i>Detailed AI Analysis</h3>
+                <div class="insight-card" style="margin-top: 1rem; white-space: pre-wrap; font-family: 'Segoe UI', sans-serif; line-height: 1.6;">{{ ai_insights.full_analysis }}</div>
+                {% endif %}
+            </div>
+        </div>
+        {% elif ai_insights and not ai_insights.analysis_generated %}
+        <div class="section">
+            <div class="ai-insights" style="background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);">
+                <h2><i class="fas fa-exclamation-triangle"></i>AI Analysis Unavailable</h2>
+                <div class="insight-card">
+                    <h4><i class="fas fa-info-circle"></i>Error Details</h4>
+                    <p>{{ ai_insights.error if ai_insights.error else 'AI analysis could not be generated for this engagement.' }}</p>
+                    <p><strong>Fallback Assessment:</strong> {{ ai_insights.risk_assessment }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="section">
+            <h2>Tools Used</h2>
+            <div class="tools-list">
+                {% for tool in tools_used %}
+                <span class="tool-badge"><i class="fas fa-tools"></i>{{ tool }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Findings by Severity</h2>
+            {% for severity, findings in findings_by_severity.items() %}
+            {% if findings %}
+            <h3>{{ severity.upper() }} ({{ findings|length }})</h3>
+            {% for finding in findings %}
+            <div class="finding">
+                <div class="finding-header {{ severity.lower() }}">
+                    <i class="fas fa-{% if severity.lower() == 'critical' %}skull{% elif severity.lower() == 'high' %}exclamation-triangle{% elif severity.lower() == 'medium' %}exclamation-circle{% elif severity.lower() == 'low' %}info-circle{% else %}question-circle{% endif %}"></i>
+                    {{ finding.title }}
+                </div>
+                <div class="finding-body">
+                    <div class="finding-meta">
+                        <div class="finding-meta-item">
+                            <div class="finding-meta-icon"><i class="fas fa-crosshairs"></i></div>
+                            <div class="finding-meta-content">
+                                <div class="finding-meta-label">Target</div>
+                                <div class="finding-meta-value">{{ finding.target }}</div>
+                            </div>
+                        </div>
+                        <div class="finding-meta-item">
+                            <div class="finding-meta-icon"><i class="fas fa-wrench"></i></div>
+                            <div class="finding-meta-content">
+                                <div class="finding-meta-label">Tool</div>
+                                <div class="finding-meta-value">{{ finding.tool }}</div>
+                            </div>
+                        </div>
+                        <div class="finding-meta-item">
+                            <div class="finding-meta-icon"><i class="fas fa-flag"></i></div>
+                            <div class="finding-meta-content">
+                                <div class="finding-meta-label">Status</div>
+                                <div class="finding-meta-value"><span class="status-badge status-{{ finding.status.value.lower().replace('_', '-') }}">{{ finding.status.value }}</span></div>
+                            </div>
+                        </div>
+                        <div class="finding-meta-item">
+                            <div class="finding-meta-icon"><i class="fas fa-percentage"></i></div>
+                            <div class="finding-meta-content">
+                                <div class="finding-meta-label">Confidence</div>
+                                <div class="finding-meta-value">{{ "%.1f" | format(finding.confidence * 100) }}%</div>
+                            </div>
+                        </div>
+                        {% if finding.cvss_score %}
+                        <div class="finding-meta-item">
+                            <div class="finding-meta-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <div class="finding-meta-content">
+                                <div class="finding-meta-label">CVSS Score</div>
+                                <div class="finding-meta-value">{{ finding.cvss_score }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if finding.cve_id %}
+                        <div class="finding-meta-item">
+                            <div class="finding-meta-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="finding-meta-content">
+                                <div class="finding-meta-label">CVE ID</div>
+                                <div class="finding-meta-value">{{ finding.cve_id }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <h4><i class="fas fa-info-circle"></i>Description</h4>
+                    <p>{{ finding.description }}</p>
+                    
+                    {% if finding.ai_analysis %}
+                    <div class="ai-analysis-section">
+                        <h4><i class="fas fa-brain"></i>AI Analysis</h4>
+                        <div class="ai-analysis-content">
+                            <p>{{ finding.ai_analysis }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if finding.triage_notes %}
+                    <h4><i class="fas fa-clipboard-check"></i>Triage Notes</h4>
+                    <p>{{ finding.triage_notes }}</p>
+                    {% endif %}
+                    
+                    {% if finding.remediation %}
+                    <h4><i class="fas fa-tools"></i>Remediation</h4>
+                    <div class="remediation-content">
+                        <p>{{ finding.remediation }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if finding.references %}
+                    <h4><i class="fas fa-external-link-alt"></i>References</h4>
+                    <ul class="references-list">
+                        {% for ref in finding.references %}
+                        <li><a href="{{ ref }}" target="_blank" rel="noopener noreferrer">{{ ref }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if triage_summary %}
+        <div class="section">
+            <div class="ai-insights">
+                <h2><i class="fas fa-brain"></i>AI Analysis Insights</h2>
+                <div class="insight-grid">
+                    <div class="insight-card">
+                        <h4><i class="fas fa-search-plus"></i>Patterns Detected</h4>
+                        <p>{{ triage_summary.patterns_detected | length }} unique patterns identified</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4><i class="fas fa-exclamation-triangle"></i>AI False Positives</h4>
+                        <p>{{ triage_summary.ai_false_positives }} findings flagged</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4><i class="fas fa-chart-pie"></i>Analysis Accuracy</h4>
+                        <p>{{ "%.1f" | format(triage_summary.analysis_accuracy * 100) }}% accuracy rate</p>
+                    </div>
+                </div>
+                
+                {% if triage_summary.key_insights %}
+                <h3><i class="fas fa-lightbulb"></i>Key Insights</h3>
+                <ul>
+                    {% for insight in triage_summary.key_insights %}
+                    <li>{{ insight }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                
+                {% if triage_summary.patterns_detected %}
+                <h3><i class="fas fa-project-diagram"></i>Detected Patterns</h3>
+                {% for pattern in triage_summary.patterns_detected %}
+                <div class="insight-card">
+                    <strong>{{ pattern.type }}:</strong> {{ pattern.description }}
+                    <br><small>{{ pattern.frequency }} occurrences</small>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="section">
+            <h2>Scan Results Summary</h2>
+            {% for tool, results in scan_summary.items() %}
+            <h3>{{ tool.upper() }}</h3>
+            <ul>
+                <li><strong>Status:</strong> {{ results.status }}</li>
+                <li><strong>Findings:</strong> {{ results.findings_count }}</li>
+                <li><strong>Duration:</strong> {{ results.duration if results.duration else 'N/A' }}</li>
+            </ul>
+            {% endfor %}
+        </div>
+
+        {% if report.timeline %}
+        <div class="section">
+            <h2>Timeline</h2>
+            <div class="timeline">
+                {% for event in report.timeline %}
+                <div class="timeline-item">
+                    <div class="timeline-time"><i class="fas fa-clock"></i>{{ event.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    <div>{{ event.description }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="recommendations">
+            <h2><i class="fas fa-clipboard-list"></i>Recommendations</h2>
+            <ol>
+                {% for recommendation in report.recommendations %}
+                <li>{{ recommendation }}</li>
+                {% endfor %}
+            </ol>
+        </div>
+
+        <div class="footer">
+            <p>Report generated by Red Team Automation Framework v1.0</p>
+            <p>Generated at: {{ generation_time.strftime('%Y-%m-%d %H:%M:%S UTC') }}</p>
+        </div>
+    </div>
+</body>
+</html>

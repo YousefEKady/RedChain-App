@@ -1,0 +1,1 @@
+"""Tools module for red team automation."""

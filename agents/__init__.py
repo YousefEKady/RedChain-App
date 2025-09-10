@@ -1,0 +1,1 @@
+"""Agents module for red team automation."""
